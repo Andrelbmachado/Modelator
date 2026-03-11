@@ -1,0 +1,71 @@
+MODELATOR 3D — INFORMACOES DO PROJETO
+
+Visao geral
+- Modelator 3D e um app de modelagem, edicao e gerenciamento 3D, inspirado no Shapr3D e Blender.
+- Plataformas alvo:
+  - iPhone (a partir do iPhone 12 com LiDAR): apenas escaneamento 3D com LiDAR + analise + visualizacao de fotos e videos.
+  - iPad (serie M) e macOS (serie M): editor completo (modelagem, textura, materiais, sombras, camadas, ambiente).
+
+Objetivo inicial
+- Criar um projeto funcional que abra e permita testar a interface e o renderer 3D basico.
+- O foco inicial e a base de UI, a organizacao de modulos e os modos de visualizacao.
+
+Modo de visualizacao (3 modos)
+1) Modelo cinza
+   - Sem textura e sem sombra.
+   - Foco em geometria e formas.
+2) Textura
+   - Apenas textura (suporte a texturas diversas e mapas como UV map e outros comuns em 3D).
+3) Sombra
+   - Sombra ativada e direcao ajustavel em 360 graus em todos os eixos.
+
+Eixos 3D
+- Deve seguir o padrao Blender:
+  - Z: vertical (cima/baixo)
+  - X: horizontal (direita/esquerda)
+  - Y: frente/tras
+
+Layout da interface
+- Duas barras laterais (esquerda e direita).
+- Barra superior invisivel; mostra apenas botoes de troca de visualizacao.
+- Barra lateral direita: controle de camadas.
+- Barra lateral esquerda: controle do ambiente (luz, HDRI, sombras, etc).
+
+Personalizacao das barras
+- O usuario pode mudar o lado das barras.
+- O usuario pode arrastar e reordenar secoes entre as barras.
+- Minimizar: a barra pode ser arrastada ate a borda e sumir.
+
+Arquitetura (estrutura base sugerida)
+- Sources/App
+  - Entrada do app (SwiftUI App, Scene, RootView)
+- Sources/UI
+  - Componentes visuais, barras laterais, toolbar superior, inspector de camadas
+- Sources/Engine3D
+  - Abstracao do renderer 3D (SceneKit/RealityKit/Metal)
+  - Modos de visualizacao
+- Sources/Models
+  - Tipos de dados (RenderMode, SidebarSection, Material, TextureMap)
+- Sources/Services
+  - Carregamento de arquivos, importacao de texturas, persistencia de layout
+- Sources/Lidar
+  - Pipeline de captura com LiDAR para iPhone
+
+Motores 3D
+- Base inicial pode usar SceneKit e RealityKit para acelerar o prototipo.
+- Metal pode ser adicionado para renderizacao avancada.
+- A arquitetura deve permitir trocar o backend sem quebrar a UI.
+
+Bundle Identifier
+- O bundle id e um identificador unico do app (ex: com.seunome.modelator3d).
+- Foi indicado o valor "Modelator3D" como placeholder e pode ser substituido depois por um reverse-DNS.
+
+Notas de implementacao
+- Cada funcao e variavel deve ter comentario explicando sua finalidade.
+- Variaveis de UI devem ter comentarios detalhando tamanho, cor, estilo e funcao.
+- SwiftUI deve ser a base de UI.
+- Evitar Combine; preferir async/await.
+
+Status atual
+- Estrutura inicial e documentos criados.
+- Falta gerar o .xcodeproj e configurar targets iOS/iPadOS/macOS no Xcode.
