@@ -1,4 +1,5 @@
 import Foundation
+import ModelatorCore
 
 /// Responsavel por salvar e restaurar o layout das barras laterais.
 struct LayoutPersistenceService {

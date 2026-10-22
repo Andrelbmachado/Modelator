@@ -1,4 +1,5 @@
 import SwiftUI
+import ModelatorCore
 
 /// Barra lateral com secoes reorganizaveis.
 struct SidebarView: View {
@@ -13,6 +14,9 @@ struct SidebarView: View {
 
     /// Cor de fundo da barra para contraste com o canvas.
     let backgroundColor: Color
+
+    /// Configuracoes de ambiente (luz/sombra) usadas pela secao de ambiente.
+    @Binding var environmentSettings: RenderSettings
 
     /// Callback para mover secao dentro da mesma barra.
     let onMove: (_ source: Int, _ destination: Int, _ side: SidebarSide) -> Void
@@ -41,6 +45,7 @@ struct SidebarView: View {
                     ForEach(Array(sections.enumerated()), id: \.element.id) { index, section in
                         SectionContainerView(
                             section: section,
+                            environmentSettings: $environmentSettings,
                             onMoveToOtherSide: {
                                 onTransfer(index, 0, side, side == .left ? .right : .left)
                             }

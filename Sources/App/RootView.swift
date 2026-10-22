@@ -12,10 +12,10 @@ struct RootView: View {
         if UIDevice.current.userInterfaceIdiom == .phone {
             IPhoneLidarView()
         } else {
-            MainWorkspaceView()
+            IPadWorkspaceView()
         }
         #else
-        MainWorkspaceView()
+        MacWorkspaceView()
         #endif
     }
 }

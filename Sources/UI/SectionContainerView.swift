@@ -1,9 +1,13 @@
 import SwiftUI
+import ModelatorCore
 
 /// Container para uma secao especifica dentro da sidebar.
 struct SectionContainerView: View {
     /// Dados da secao exibida.
     let section: SidebarSection
+
+    /// Configuracoes de ambiente (luz/sombra), usadas pela secao de ambiente.
+    @Binding var environmentSettings: RenderSettings
 
     /// Callback para mover a secao para a outra barra.
     let onMoveToOtherSide: () -> Void
@@ -33,7 +37,7 @@ struct SectionContainerView: View {
             Group {
                 switch section.type {
                 case .environment:
-                    EnvironmentSectionView()
+                    EnvironmentSectionView(settings: $environmentSettings)
                 case .layers:
                     LayersSectionView()
                 }
