@@ -1,9 +1,9 @@
 import Foundation
 
 /// Define os modos de visualizacao do renderer.
-enum RenderMode: String, CaseIterable, Identifiable {
+public enum RenderMode: String, CaseIterable, Identifiable, Codable {
     /// Identificador unico para listas SwiftUI.
-    var id: String { rawValue }
+    public var id: String { rawValue }
 
     /// Modo com modelo cinza, sem textura e sem sombra.
     case grayModel
@@ -15,7 +15,7 @@ enum RenderMode: String, CaseIterable, Identifiable {
     case shadowOnly
 
     /// Nome exibido na UI para cada modo.
-    var displayName: String {
+    public var displayName: String {
         switch self {
         case .grayModel:
             return "Modelo cinza"

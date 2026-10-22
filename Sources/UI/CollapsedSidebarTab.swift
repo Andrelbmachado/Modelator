@@ -1,4 +1,5 @@
 import SwiftUI
+import ModelatorCore
 
 /// Aba visivel quando a barra lateral esta minimizada.
 struct CollapsedSidebarTab: View {

@@ -10,27 +10,27 @@ Legenda: `[ ]` a fazer · `[x]` feito · 📄 arquivo afetado
 
 O objetivo é sair de "pasta de arquivos Swift" para "app que abre".
 
-- [ ] Criar o projeto Xcode Multiplatform `Modelator3D` com os targets macOS 14+, iPadOS 17+ e iOS 17+, apontando para `Sources/`. Bundle id reverse-DNS (por exemplo `com.andremachado.modelator3d`).
-- [ ] Trocar `NSColor` por uma cor multiplataforma em `ModelatorSceneFactory` (um typealias `PlatformColor` ou `CGColor`). 📄 `Engine3D/ModelatorSceneView.swift`
-- [ ] Tornar `SidebarSide`, `SidebarSectionType`, `SidebarSection` e `SidebarLayout` `Codable`. 📄 `Models/SidebarModels.swift`
-- [ ] Carregar o layout no `onAppear` e salvar a cada mudança em `MainWorkspaceView`. 📄 `UI/MainWorkspaceView.swift`, `Services/LayoutPersistenceService.swift`
-- [ ] Adicionar `NSCameraUsageDescription` ao Info.plist do iOS.
-- [ ] Remover `MacWorkspaceView` e `IPadWorkspaceView` ou passar a usá-las no `RootView`.
-- [ ] Adicionar um target de testes com um teste para `SidebarLayout.moveSection` e outro para `transferSection`.
-- [ ] Configurar CI no GitHub Actions rodando `xcodebuild build test` para macOS e para o simulador de iPad.
+- [ ] Criar o projeto Xcode Multiplatform `Modelator3D` com os targets macOS 14+, iPadOS 17+ e iOS 17+, apontando para `Sources/`. Bundle id reverse-DNS (por exemplo `com.andremachado.modelator3d`). _(Parcial: criado `Package.swift` com o alvo `ModelatorCore` — lógica pura — para `swift build`/`swift test` no CLI. O projeto Xcode do app gráfico ainda falta.)_
+- [x] Trocar `NSColor` por uma cor multiplataforma em `ModelatorSceneFactory` (um typealias `PlatformColor` ou `CGColor`). 📄 `Engine3D/ModelatorSceneView.swift`
+- [x] Tornar `SidebarSide`, `SidebarSectionType`, `SidebarSection` e `SidebarLayout` `Codable`. 📄 `ModelatorCore/SidebarModels.swift`
+- [x] Carregar o layout no `onAppear` e salvar a cada mudança em `MainWorkspaceView`. 📄 `UI/MainWorkspaceView.swift`, `Services/LayoutPersistenceService.swift`
+- [ ] Adicionar `NSCameraUsageDescription` ao Info.plist do iOS. _(Pendente: depende do projeto Xcode, que ainda não existe.)_
+- [x] Remover `MacWorkspaceView` e `IPadWorkspaceView` ou passar a usá-las no `RootView`. _(Agora o `RootView` usa `MacWorkspaceView`/`IPadWorkspaceView` por plataforma.)_
+- [x] Adicionar um target de testes com um teste para `SidebarLayout.moveSection` e outro para `transferSection`. 📄 `Tests/ModelatorCoreTests/`
+- [x] Configurar CI no GitHub Actions rodando `swift build test` do `ModelatorCore`. 📄 `.github/workflows/ci.yml` _(o `xcodebuild build test` entra quando o projeto Xcode existir.)_
 
-**Pronto quando:** o app abre no Mac e no simulador de iPad, o layout das barras sobrevive a um relaunch e o CI passa.
+**Pronto quando:** o app abre no Mac e no simulador de iPad, o layout das barras sobrevive a um relaunch e o CI passa. _(Parcial: modelos, persistência, testes e CI prontos; falta o projeto Xcode do app gráfico para abrir no Mac/iPad.)_
 
 ## Fase 1 — Viewport e modos de visualização
 
-- [ ] **Z-up:** criar um nó raiz da cena rotacionado −90° em X, para que o conteúdo use Z para cima. A câmera padrão olha para a origem em (7, −7, 5), como no Blender.
-- [ ] Desenhar uma grade no chão (plano XY) e os eixos coloridos (X vermelho, Y verde, Z azul).
-- [ ] **Sombra:** adicionar um plano de chão que recebe sombra. Converter `shadowDirection` (vetor) em orientação da luz com `simdLook(at:)` em vez de usar ângulos de Euler.
-- [ ] Ligar o painel de Ambiente ao `RenderSettings`: slider de intensidade e três sliders de 0 a 360° (X/Y/Z) chamando `updateShadowDirection`. 📄 `UI/EnvironmentSectionView.swift`
-- [ ] **Textura:** carregar uma imagem do disco (Files ou drag-and-drop) e aplicá-la como `diffuse`. Mostrar um checker padrão quando não houver textura.
-- [ ] Restaurar a barra minimizada com a largura padrão (260/300 pt). 📄 `UI/MainWorkspaceView.swift`
+- [x] **Z-up:** criar um nó raiz da cena rotacionado −90° em X, para que o conteúdo use Z para cima. A câmera padrão olha para a origem em (7, −7, 5), como no Blender.
+- [x] Desenhar uma grade no chão (plano XY) e os eixos coloridos (X vermelho, Y verde, Z azul).
+- [x] **Sombra:** adicionar um plano de chão que recebe sombra. Converter `shadowDirection` (vetor) em orientação da luz com uma matriz de "look" (`simd`) em vez de usar ângulos de Euler.
+- [x] Ligar o painel de Ambiente ao `RenderSettings`: slider de intensidade e três sliders de 0 a 360° (X/Y/Z) chamando `updateShadowDirection`. 📄 `UI/EnvironmentSectionView.swift`
+- [ ] **Textura:** carregar uma imagem do disco (Files ou drag-and-drop) e aplicá-la como `diffuse`. _(Parcial: o modo "Textura" já mostra um checker padrão gerado via Core Graphics quando não há textura; falta carregar imagem do disco.)_
+- [x] Restaurar a barra minimizada com a largura padrão (260/300 pt). 📄 `UI/MainWorkspaceView.swift`
 
-**Pronto quando:** os três modos ficam visualmente diferentes, a sombra gira com os sliders e o cubo aparece "em pé" sobre a grade XY.
+**Pronto quando:** os três modos ficam visualmente diferentes, a sombra gira com os sliders e o cubo aparece "em pé" sobre a grade XY. _(Implementado no código; falta verificação visual no app — depende do projeto Xcode.)_
 
 ## Fase 2 — Modelo de cena e camadas
 
@@ -93,4 +93,4 @@ O diferencial do projeto. Depende das Fases 2 e 3.
 - **Estrutura de malha:** half-edge própria ou uma biblioteca externa?
 - **Transporte do MCP:** stdio (mais simples para o Claude Code) ou HTTP local (permite vários clientes)?
 
-<sub>Plano revisado em 21/10/2026 a partir do código real e de `Informacoes projeto.txt`.</sub>
+<sub>Plano revisado em 21/10/2026 a partir do código real e de `Informacoes projeto.txt`. Itens das Fases 0 e 1 implementados em 22/10/2026 (verificação via `swift test` do `ModelatorCore`).</sub>

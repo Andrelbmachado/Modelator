@@ -1,7 +1,14 @@
 import SwiftUI
+import ModelatorCore
 
 /// Tela principal do editor completo (iPad e macOS).
 struct MainWorkspaceView: View {
+    /// Largura padrao da barra esquerda em pontos.
+    private static let defaultLeftWidth: CGFloat = 260
+
+    /// Largura padrao da barra direita em pontos.
+    private static let defaultRightWidth: CGFloat = 300
+
     /// Modo de renderizacao ativo (cinza, textura ou sombra).
     @State private var renderMode: RenderMode = .grayModel
 
@@ -11,11 +18,14 @@ struct MainWorkspaceView: View {
     /// Layout atual das secoes das barras laterais.
     @State private var sidebarLayout: SidebarLayout = SidebarLayout()
 
+    /// Servico de persistencia do layout das barras.
+    private let layoutPersistence = LayoutPersistenceService()
+
     /// Largura visual da barra esquerda em pontos.
-    @State private var leftSidebarWidth: CGFloat = 260
+    @State private var leftSidebarWidth: CGFloat = MainWorkspaceView.defaultLeftWidth
 
     /// Largura visual da barra direita em pontos.
-    @State private var rightSidebarWidth: CGFloat = 300
+    @State private var rightSidebarWidth: CGFloat = MainWorkspaceView.defaultRightWidth
 
     /// Altura da barra superior em pontos.
     @State private var topBarHeight: CGFloat = 48
@@ -33,10 +43,10 @@ struct MainWorkspaceView: View {
     @State private var isRightCollapsed: Bool = false
 
     /// Largura inicial da barra esquerda durante o gesto de arraste.
-    @State private var leftDragStartWidth: CGFloat = 260
+    @State private var leftDragStartWidth: CGFloat = MainWorkspaceView.defaultLeftWidth
 
     /// Largura inicial da barra direita durante o gesto de arraste.
-    @State private var rightDragStartWidth: CGFloat = 300
+    @State private var rightDragStartWidth: CGFloat = MainWorkspaceView.defaultRightWidth
 
     /// Cor de fundo das barras laterais para separar do canvas.
     private var sidebarBackgroundColor: Color {
@@ -66,6 +76,7 @@ struct MainWorkspaceView: View {
                         sections: $sidebarLayout.leftSections,
                         width: leftSidebarWidth,
                         backgroundColor: sidebarBackgroundColor,
+                        environmentSettings: $renderSettings,
                         onMove: handleSectionMove,
                         onTransfer: handleSectionTransfer,
                         onDragResize: handleLeftResize
@@ -73,7 +84,7 @@ struct MainWorkspaceView: View {
                 } else {
                     CollapsedSidebarTab(
                         side: .left,
-                        onRestore: { isLeftCollapsed = false }
+                        onRestore: restoreLeftSidebar
                     )
                 }
 
@@ -90,6 +101,7 @@ struct MainWorkspaceView: View {
                         sections: $sidebarLayout.rightSections,
                         width: rightSidebarWidth,
                         backgroundColor: sidebarBackgroundColor,
+                        environmentSettings: $renderSettings,
                         onMove: handleSectionMove,
                         onTransfer: handleSectionTransfer,
                         onDragResize: handleRightResize
@@ -97,7 +109,7 @@ struct MainWorkspaceView: View {
                 } else {
                     CollapsedSidebarTab(
                         side: .right,
-                        onRestore: { isRightCollapsed = false }
+                        onRestore: restoreRightSidebar
                     )
                 }
             }
@@ -107,6 +119,31 @@ struct MainWorkspaceView: View {
                 barHeight: topBarHeight
             )
         }
+        .onAppear(perform: loadLayout)
+        .onChange(of: sidebarLayout) { _, newLayout in
+            layoutPersistence.save(layout: newLayout)
+        }
+    }
+
+    /// Carrega o layout salvo, se existir, ao abrir a tela.
+    private func loadLayout() {
+        if let saved = layoutPersistence.load() {
+            sidebarLayout = saved
+        }
+    }
+
+    /// Restaura a barra esquerda com a largura padrao.
+    private func restoreLeftSidebar() {
+        leftSidebarWidth = Self.defaultLeftWidth
+        leftDragStartWidth = Self.defaultLeftWidth
+        isLeftCollapsed = false
+    }
+
+    /// Restaura a barra direita com a largura padrao.
+    private func restoreRightSidebar() {
+        rightSidebarWidth = Self.defaultRightWidth
+        rightDragStartWidth = Self.defaultRightWidth
+        isRightCollapsed = false
     }
 
     /// Reordena uma secao dentro da mesma barra lateral.
@@ -133,13 +170,13 @@ struct MainWorkspaceView: View {
     ///   - translation: Deslocamento horizontal do gesto.
     ///   - isEnded: Indica se o gesto terminou.
     private func handleLeftResize(translation: CGFloat, isEnded: Bool) {
-        if isEnded {
-            leftDragStartWidth = leftSidebarWidth
-        }
-
         let newWidth = max(0, leftDragStartWidth + translation)
         leftSidebarWidth = min(newWidth, 420)
         isLeftCollapsed = leftSidebarWidth <= leftCollapseThreshold
+
+        if isEnded {
+            leftDragStartWidth = leftSidebarWidth
+        }
     }
 
     /// Atualiza a largura da barra direita durante o arraste.
@@ -147,12 +184,12 @@ struct MainWorkspaceView: View {
     ///   - translation: Deslocamento horizontal do gesto.
     ///   - isEnded: Indica se o gesto terminou.
     private func handleRightResize(translation: CGFloat, isEnded: Bool) {
-        if isEnded {
-            rightDragStartWidth = rightSidebarWidth
-        }
-
         let newWidth = max(0, rightDragStartWidth - translation)
         rightSidebarWidth = min(newWidth, 420)
         isRightCollapsed = rightSidebarWidth <= rightCollapseThreshold
+
+        if isEnded {
+            rightDragStartWidth = rightSidebarWidth
+        }
     }
 }

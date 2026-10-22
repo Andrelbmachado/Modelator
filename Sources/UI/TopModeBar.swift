@@ -1,4 +1,5 @@
 import SwiftUI
+import ModelatorCore
 
 /// Barra superior invisivel com botoes de modo de visualizacao.
 struct TopModeBar: View {
